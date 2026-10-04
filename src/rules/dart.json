@@ -1,0 +1,23 @@
+{
+  "languageId": "dart",
+  "rules": [
+    {
+      "id": "dart-import",
+      "kind": "import",
+      "pattern": "import\\s+['\"]([^'\"]+)['\"]",
+      "captureGroups": { "module": 1 }
+    },
+    {
+      "id": "dart-class",
+      "kind": "declaration",
+      "pattern": "class\\s+([A-Za-z0-9_]+)\\s+(?:extends|implements|with)?",
+      "captureGroups": { "kind": "class", "name": 1 }
+    },
+    {
+      "id": "dart-main",
+      "kind": "entry",
+      "pattern": "void\\s+main\\s*\\(\\s*\\)",
+      "captureGroups": { "name": "main" }
+    }
+  ]
+}

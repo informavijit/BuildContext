@@ -1,0 +1,29 @@
+{
+  "languageId": "java",
+  "rules": [
+    {
+      "id": "java-import",
+      "kind": "import",
+      "pattern": "^\\s*import\\s+([a-zA-Z0-9_.]+);",
+      "captureGroups": { "module": 1 }
+    },
+    {
+      "id": "java-class",
+      "kind": "declaration",
+      "pattern": "\\b(public|protected|private)?\\s*(class|interface|enum|record)\\s+([A-Z][a-zA-Z0-9_]*)",
+      "captureGroups": { "kind": 2, "name": 3 }
+    },
+    {
+      "id": "java-spring-controller",
+      "kind": "route",
+      "pattern": "@(GetMapping|PostMapping|PutMapping|DeleteMapping|RequestMapping)\\s*\\(\\s*[\"']([^\"']+)[\"']",
+      "captureGroups": { "method": 1, "path": 2 }
+    },
+    {
+      "id": "java-main",
+      "kind": "entry",
+      "pattern": "public\\s+static\\s+void\\s+main\\s*\\(\\s*String",
+      "captureGroups": { "name": "main" }
+    }
+  ]
+}

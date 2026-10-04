@@ -1,0 +1,17 @@
+{
+  "languageId": "sql",
+  "rules": [
+    {
+      "id": "sql-create-table",
+      "kind": "data",
+      "pattern": "\\bCREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?([`\"'A-Za-z0-9_.]+) ",
+      "captureGroups": { "name": 1, "method": "TABLE" }
+    },
+    {
+      "id": "sql-create-proc",
+      "kind": "declaration",
+      "pattern": "\\bCREATE\\s+(?:OR\\s+REPLACE\\s+)?(?:PROCEDURE|FUNCTION)\\s+([`\"'A-Za-z0-9_.]+)",
+      "captureGroups": { "kind": "procedure", "name": 1 }
+    }
+  ]
+}

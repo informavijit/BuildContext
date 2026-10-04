@@ -1,0 +1,11 @@
+{
+  "languageId": "generic",
+  "rules": [
+    {
+      "id": "generic-todo",
+      "kind": "config",
+      "pattern": "\\b(TODO|FIXME|HACK):?\\s*(.*)",
+      "captureGroups": { "name": 2 }
+    }
+  ]
+}

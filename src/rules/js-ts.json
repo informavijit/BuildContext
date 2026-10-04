@@ -1,0 +1,29 @@
+{
+  "languageId": "typescript",
+  "rules": [
+    {
+      "id": "jsts-import",
+      "kind": "import",
+      "pattern": "^\\s*import\\s+(?:(?:\\{?\\s*([a-zA-Z0-9_$,\\s*]+)\\s*\\}?\\s+from\\s+)?['\"]([^'\"]+)['\"]|['\"]([^'\"]+)['\"])",
+      "captureGroups": { "module": 2, "symbol": 1 }
+    },
+    {
+      "id": "jsts-require",
+      "kind": "import",
+      "pattern": "(?:const|let|var)\\s+(?:\\{?\\s*([a-zA-Z0-9_$,\\s*]+)\\s*\\}?\\s*=\\s*)?require\\(['\"]([^'\"]+)['\"]\\)",
+      "captureGroups": { "module": 2, "symbol": 1 }
+    },
+    {
+      "id": "jsts-decl",
+      "kind": "declaration",
+      "pattern": "\\b(class|interface|type|enum|function)\\s+([A-Za-z0-9_$]+)",
+      "captureGroups": { "kind": 1, "name": 2 }
+    },
+    {
+      "id": "jsts-export-const",
+      "kind": "declaration",
+      "pattern": "^\\s*export\\s+(?:const|let|var)\\s+([A-Za-z0-9_$]+)",
+      "captureGroups": { "kind": "export", "name": 1 }
+    }
+  ]
+}

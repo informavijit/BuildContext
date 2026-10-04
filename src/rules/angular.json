@@ -1,0 +1,23 @@
+{
+  "languageId": "angular",
+  "rules": [
+    {
+      "id": "angular-decorator",
+      "kind": "declaration",
+      "pattern": "@(Component|Directive|Pipe|Injectable|NgModule)\\s*\\(",
+      "captureGroups": { "kind": 1 }
+    },
+    {
+      "id": "angular-class",
+      "kind": "declaration",
+      "pattern": "export\\s+class\\s+([A-Za-z0-9_]+)",
+      "captureGroups": { "name": 1 }
+    },
+    {
+      "id": "angular-route",
+      "kind": "route",
+      "pattern": "path:\\s*['\"]([^'\"]+)['\"]",
+      "captureGroups": { "path": 1 }
+    }
+  ]
+}

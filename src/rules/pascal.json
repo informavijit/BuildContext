@@ -1,0 +1,29 @@
+{
+  "languageId": "delphi",
+  "rules": [
+    {
+      "id": "pascal-uses",
+      "kind": "import",
+      "pattern": "\\buses\\s+([^;]+);",
+      "captureGroups": { "module": 1 }
+    },
+    {
+      "id": "pascal-class",
+      "kind": "declaration",
+      "pattern": "\\b([T][A-Za-z0-9_]+)\\s*=\\s*class\\s*\\(?([A-Za-z0-9_]*)\\)?",
+      "captureGroups": { "name": 1, "kind": "class" }
+    },
+    {
+      "id": "pascal-external-dll",
+      "kind": "external",
+      "pattern": "\\bexternal\\s+['\"]([^'\"]+)['\"]",
+      "captureGroups": { "name": 1, "kind": "DLLImport" }
+    },
+    {
+      "id": "pascal-program-main",
+      "kind": "entry",
+      "pattern": "\\bprogram\\s+([A-Za-z0-9_]+);",
+      "captureGroups": { "name": 1 }
+    }
+  ]
+}

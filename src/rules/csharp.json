@@ -1,0 +1,35 @@
+{
+  "languageId": "csharp",
+  "rules": [
+    {
+      "id": "cs-using",
+      "kind": "import",
+      "pattern": "^\\s*using\\s+([a-zA-Z0-9_.]+);",
+      "captureGroups": { "module": 1 }
+    },
+    {
+      "id": "cs-class",
+      "kind": "declaration",
+      "pattern": "\\b(public|protected|private|internal)?\\s*(class|interface|struct|enum|record)\\s+([A-Z][a-zA-Z0-9_]*)",
+      "captureGroups": { "kind": 2, "name": 3 }
+    },
+    {
+      "id": "cs-aspnet-route",
+      "kind": "route",
+      "pattern": "\\[(HttpGet|HttpPost|HttpPut|HttpDelete|Route)\\s*\\(\\s*[\"']([^\"']+)[\"']",
+      "captureGroups": { "method": 1, "path": 2 }
+    },
+    {
+      "id": "cs-main",
+      "kind": "entry",
+      "pattern": "static\\s+(async\\s+)?(void|int|Task)\\s+Main\\s*\\(",
+      "captureGroups": { "name": "Main" }
+    },
+    {
+      "id": "cs-dllimport",
+      "kind": "external",
+      "pattern": "\\[DllImport\\s*\\(\\s*[\"']([^\"']+)[\"']",
+      "captureGroups": { "name": 1, "kind": "DllImport" }
+    }
+  ]
+}

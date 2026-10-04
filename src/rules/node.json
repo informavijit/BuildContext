@@ -1,0 +1,23 @@
+{
+  "languageId": "node",
+  "rules": [
+    {
+      "id": "express-route",
+      "kind": "route",
+      "pattern": "(?:app|router|server)\\.(get|post|put|delete|patch|use)\\s*\\(\\s*['\"]([^'\"]+)['\"]",
+      "captureGroups": { "method": 1, "path": 2 }
+    },
+    {
+      "id": "nest-route",
+      "kind": "route",
+      "pattern": "@(Get|Post|Put|Delete|Patch)\\s*\\(\\s*['\"]?([^'\"]*)['\"]?\\s*\\)",
+      "captureGroups": { "method": 1, "path": 2 }
+    },
+    {
+      "id": "nest-controller",
+      "kind": "declaration",
+      "pattern": "@Controller\\s*\\(\\s*['\"]?([^'\"]*)['\"]?\\s*\\)",
+      "captureGroups": { "kind": "NestController", "name": 1 }
+    }
+  ]
+}

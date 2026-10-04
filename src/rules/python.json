@@ -1,0 +1,29 @@
+{
+  "languageId": "python",
+  "rules": [
+    {
+      "id": "py-import",
+      "kind": "import",
+      "pattern": "^\\s*(?:import\\s+([a-zA-Z0-9_.,\\s]+)|from\\s+([a-zA-Z0-9_.]+)\\s+import\\s+([a-zA-Z0-9_.,\\s*()]+))",
+      "captureGroups": { "module": 2, "symbol": 3 }
+    },
+    {
+      "id": "py-class-def",
+      "kind": "declaration",
+      "pattern": "^\\s*(?:class|def)\\s+([a-zA-Z0-9_]+)",
+      "captureGroups": { "kind": "definition", "name": 1 }
+    },
+    {
+      "id": "py-fastapi-route",
+      "kind": "route",
+      "pattern": "@(?:app|router)\\.(get|post|put|delete|patch)\\s*\\(\\s*[\"']([^\"']+)[\"']",
+      "captureGroups": { "method": 1, "path": 2 }
+    },
+    {
+      "id": "py-main",
+      "kind": "entry",
+      "pattern": "if\\s+__name__\\s*==\\s*[\"']__main__[\"']:",
+      "captureGroups": { "name": "__main__" }
+    }
+  ]
+}

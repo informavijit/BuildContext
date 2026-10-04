@@ -1,0 +1,29 @@
+{
+  "languageId": "react",
+  "rules": [
+    {
+      "id": "react-component-func",
+      "kind": "declaration",
+      "pattern": "\\bfunction\\s+([A-Z][a-zA-Z0-9_]*)\\s*\\(",
+      "captureGroups": { "kind": "ReactComponent", "name": 1 }
+    },
+    {
+      "id": "react-component-const",
+      "kind": "declaration",
+      "pattern": "\\bconst\\s+([A-Z][a-zA-Z0-9_]*)\\s*=\\s*(?:React\\.)?(?:memo|forwardRef)?\\s*\\(?\\s*\\([^{]*\\)\\s*=>",
+      "captureGroups": { "kind": "ReactComponent", "name": 1 }
+    },
+    {
+      "id": "react-hook",
+      "kind": "declaration",
+      "pattern": "\\bconst\\s+(use[A-Z][a-zA-Z0-9_]*)\\s*=",
+      "captureGroups": { "kind": "ReactHook", "name": 1 }
+    },
+    {
+      "id": "react-router-route",
+      "kind": "route",
+      "pattern": "<Route\\s+[^>]*path=[\"']([^\"']+)[\"']",
+      "captureGroups": { "method": "GET", "path": 1 }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "languageId": "vue-svelte",
+  "rules": [
+    {
+      "id": "vue-script-setup",
+      "kind": "declaration",
+      "pattern": "<script\\s+(?:setup|lang=[\"'][^\"']+[\"'])*>",
+      "captureGroups": { "kind": "SFCComponent" }
+    }
+  ]
+}

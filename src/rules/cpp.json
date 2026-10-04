@@ -1,0 +1,23 @@
+{
+  "languageId": "cpp",
+  "rules": [
+    {
+      "id": "cpp-include",
+      "kind": "import",
+      "pattern": "#include\\s+[\"<]([^\">]+)[\">]",
+      "captureGroups": { "module": 1 }
+    },
+    {
+      "id": "cpp-class",
+      "kind": "declaration",
+      "pattern": "\\b(class|struct|namespace)\\s+([a-zA-Z0-9_]+)",
+      "captureGroups": { "kind": 1, "name": 2 }
+    },
+    {
+      "id": "cpp-main",
+      "kind": "entry",
+      "pattern": "\\b(int|void)\\s+(main|WinMain|DllMain)\\s*\\(",
+      "captureGroups": { "name": 2 }
+    }
+  ]
+}

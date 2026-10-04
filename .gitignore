@@ -1,0 +1,7 @@
+node_modules/
+dist/
+out/
+*.vsix
+.buildcontext/
+coverage/
+.DS_Store

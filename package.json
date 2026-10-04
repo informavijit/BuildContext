@@ -1,0 +1,213 @@
+{
+  "name": "buildcontext",
+  "displayName": "BuildContext",
+  "description": "Extract compact, AI-agent-optimized knowledge bases from codebases and refine Markdown context files.",
+  "version": "1.0.0",
+  "publisher": "AvijitKumarTewary",
+  "icon": "media/icon.png",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Visualization"
+  ],
+  "keywords": [
+    "context",
+    "knowledge-base",
+    "ai-agent",
+    "claude",
+    "copilot",
+    "cursor",
+    "markdown"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCommand:buildcontext.workspace",
+    "onCommand:buildcontext.folder",
+    "onCommand:buildcontext.refinePath",
+    "onCommand:buildcontext.workspaceAi",
+    "onCommand:buildcontext.refinePathAi",
+    "onCommand:buildcontext.generatePointers",
+    "onCommand:buildcontext.openIndex"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "buildcontext.workspace",
+        "title": "BuildContext: Workspace"
+      },
+      {
+        "command": "buildcontext.folder",
+        "title": "BuildContext: Folder..."
+      },
+      {
+        "command": "buildcontext.refinePath",
+        "title": "BuildContext: Refine Path"
+      },
+      {
+        "command": "buildcontext.workspaceAi",
+        "title": "BuildContext: Workspace AI"
+      },
+      {
+        "command": "buildcontext.refinePathAi",
+        "title": "BuildContext: Refine Path AI"
+      },
+      {
+        "command": "buildcontext.generatePointers",
+        "title": "BuildContext: Generate Agent Pointers"
+      },
+      {
+        "command": "buildcontext.openIndex",
+        "title": "BuildContext: Open Index"
+      }
+    ],
+    "configuration": {
+      "title": "BuildContext",
+      "properties": {
+        "buildcontext.outputFolder": {
+          "type": "string",
+          "default": "",
+          "description": "Output folder path relative to workspace root (defaults to .buildcontext/kb/)"
+        },
+        "buildcontext.include": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Additional glob patterns to include in scanning"
+        },
+        "buildcontext.exclude": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Glob patterns to exclude from scanning"
+        },
+        "buildcontext.maxFiles": {
+          "type": "number",
+          "default": 20000,
+          "description": "Maximum number of files to scan per workspace"
+        },
+        "buildcontext.maxFileSizeKB": {
+          "type": "number",
+          "default": 512,
+          "description": "Maximum file size in KB to analyze"
+        },
+        "buildcontext.kb.targetTokensPerApp": {
+          "type": "number",
+          "default": 3000,
+          "description": "Target token count per application KB markdown file"
+        },
+        "buildcontext.kb.hardCapTokensPerApp": {
+          "type": "number",
+          "default": 6000,
+          "description": "Hard token cap per application KB markdown file"
+        },
+        "buildcontext.kb.maxKeyComponents": {
+          "type": "number",
+          "default": 15,
+          "description": "Maximum number of key components listed per app"
+        },
+        "buildcontext.kb.includeGitHotspots": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include git commit frequency hotspots if available"
+        },
+        "buildcontext.refine.duplicateThreshold": {
+          "type": "number",
+          "default": 0.85,
+          "description": "Jaccard similarity threshold for near-duplicate section detection"
+        },
+        "buildcontext.refine.relatedThreshold": {
+          "type": "number",
+          "default": 0.5,
+          "description": "Cosine similarity threshold for related topic clustering"
+        },
+        "buildcontext.refine.targetTotalTokens": {
+          "type": [ "number", "null" ],
+          "default": null,
+          "description": "Optional overall token budget target for Refine Path"
+        },
+        "buildcontext.refine.backup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Create timestamped backup before modifying files in place"
+        },
+        "buildcontext.languages.enabled": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "List of language IDs to analyze (empty means all enabled)"
+        },
+        "buildcontext.customRulePacks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Paths to custom regex rule-pack JSON files"
+        },
+        "buildcontext.redactSecrets": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically redact potential API keys, passwords, and tokens"
+        },
+        "buildcontext.ai.provider": {
+          "type": "string",
+          "enum": ["vscode-lm", "openai-compatible", "anthropic", "gemini", "ollama"],
+          "default": "vscode-lm",
+          "description": "AI provider for Workspace AI and Refine Path AI"
+        },
+        "buildcontext.ai.model": {
+          "type": "string",
+          "default": "",
+          "description": "AI model ID (e.g. gpt-4o, claude-3-5-sonnet, llama3)"
+        },
+        "buildcontext.ai.endpoint": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "API endpoint URL for Ollama or OpenAI-compatible servers"
+        },
+        "buildcontext.ai.maxTokensPerApp": {
+          "type": "number",
+          "default": 60000,
+          "description": "Maximum input context tokens per app during AI generation"
+        },
+        "buildcontext.ai.maxTokensTotal": {
+          "type": "number",
+          "default": 500000,
+          "description": "Maximum aggregate token budget for AI operations"
+        },
+        "buildcontext.ai.dryRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "Prompt for token estimate confirmation before invoking AI models"
+        },
+        "buildcontext.ai.useToolLoop": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow AI model to use workspace-scoped read-only tools"
+        },
+        "buildcontext.ai.excludeFromAi": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Globs of files never to send to AI models"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build": "node esbuild.js --production",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.1"
+  }
+}

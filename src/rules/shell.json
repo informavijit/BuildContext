@@ -1,0 +1,17 @@
+{
+  "languageId": "shell",
+  "rules": [
+    {
+      "id": "sh-source",
+      "kind": "import",
+      "pattern": "^\\s*(?:source|\\.)\\s+([^\\s]+)",
+      "captureGroups": { "module": 1 }
+    },
+    {
+      "id": "sh-function",
+      "kind": "declaration",
+      "pattern": "^\\s*(?:function\\s+)?([A-Za-z0-9_-]+)\\s*\\(\\)",
+      "captureGroups": { "kind": "function", "name": 1 }
+    }
+  ]
+}

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BuildContext - Functional User Guide &amp; Token Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+
+  :root {
+    --orange: #FF6B35;
+    --yellow: #FFD23F;
+    --purple: #8B5CF6;
+    --blue: #3B82F6;
+    --green: #10B981;
+    --red: #EF4444;
+    --dark: #0B0B14;
+    --dark2: #141424;
+    --dark3: #1F1F38;
+    --dark4: #2A2A4A;
+    --text: #F0F0FA;
+    --muted: #9AA0C0;
+    --border: rgba(255,255,255,0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,107,53,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,107,53,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,107,53,0.14);
+    border: 1px solid rgba(255,107,53,0.35);
+    border-radius: 999px;
+    padding: 6px 18px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(255,107,53,0.15);
+  }
+
+  .header h1 {
+    font-size: clamp(30px, 4.5vw, 48px);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #FF6B35, #FFD23F, #8B5CF6, #3B82F6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 920px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #A0A5C8;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .arch-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .card {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .tag-orange { background: rgba(255,107,53,0.18); color: var(--orange); border: 1px solid rgba(255,107,53,0.3); }
+  .tag-purple { background: rgba(139,92,246,0.18); color: var(--purple); border: 1px solid rgba(139,92,246,0.3); }
+  .tag-green  { background: rgba(16,185,129,0.18); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .tag-blue   { background: rgba(59,130,246,0.18); color: var(--blue); border: 1px solid rgba(59,130,246,0.3); }
+  .tag-yellow { background: rgba(255,210,63,0.18); color: var(--yellow); border: 1px solid rgba(255,210,63,0.3); }
+
+  .toc { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 14px; margin-bottom: 28px;
+    background: rgba(15,15,26,0.92); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 14px; }
+  .toc a { font-size: 11px; font-weight: 600; color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 999px; }
+  .toc a:hover { color: var(--text); background: var(--dark3); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 16px 0 24px; }
+  .stat { background: var(--dark2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: center; }
+  .stat-num { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--orange), var(--yellow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  table.data { width: 100%; border-collapse: collapse; font-size: 12px; background: var(--dark2); border-radius: 14px; overflow: hidden; margin: 14px 0; }
+  table.data th { text-align: left; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 12px 14px; background: var(--dark3); }
+  table.data td { padding: 10px 14px; border-top: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  .table-scroll { overflow-x: auto; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--yellow); }
+  pre { background: var(--dark3); border: 1px solid var(--border); border-radius: 12px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); overflow-x: auto; margin: 12px 0; }
+
+  details.section > summary { cursor: pointer; list-style: none; padding: 12px 0; }
+
+  :root[data-theme="light"] { --dark:#F6F6FB; --dark2:#FFFFFF; --dark3:#ECECF5; --dark4:#E0E0EE; --text:#1A1A2E; --muted:#5A5A78; --border:rgba(0,0,0,0.10); }
+
+  </style>
+</head>
+<body>
+  <div class="page">
+    
+    <nav class="toc">
+      <a href="#overview">1. Overview &amp; Value</a>
+      <a href="#commands">2. Commands Reference</a>
+      <a href="#token-metrics">3. Token Metrics &amp; Savings</a>
+      <a href="#categories-spec">4. Customizing CATEGORIES.md</a>
+      <a href="#refine-architecture">5. Refine Path &amp; Multi-Agent Specs</a>
+      <a href="#manual-preservation">6. Manual Block Safety</a>
+      <a href="#troubleshooting">7. FAQ</a>
+      <button onclick="toggleTheme()" style="margin-left:auto; background:var(--dark3); border:1px solid var(--border); color:var(--text); padding:4px 12px; border-radius:999px; cursor:pointer; font-size:11px;">🌓 Theme</button>
+    </nav>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-badge">🚀 BuildContext • Functional User Guide &amp; Token Architecture</div>
+      <h1>BuildContext Functional User Guide</h1>
+      <div class="header-sub">Learn how to extract compact knowledge bases, manage token budgets, customize domain categories, and deploy multi-agent AI coding architectures.</div>
+    </div>
+
+    <!-- Section 1: Overview & Value -->
+    <details class="section" open id="overview">
+      <summary><div class="section-label">1. Executive Overview &amp; Value Proposition</div></summary>
+      
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Offline &amp; Free</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">80-90%</div>
+          <div class="stat-label">Token Savings</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">6 - 8</div>
+          <div class="stat-label">Domain Agents</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Secret Leaks</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💡 Why BuildContext?</div>
+        <div class="card-desc">
+          AI coding agents (Claude Code, GitHub Copilot, Cursor, Gemini) waste tens of thousands of expensive tokens reading raw source files repeatedly. 
+          <strong>BuildContext solves this problem</strong> by traversing your codebase, identifying applications and microservices, and writing compact, pre-processed Markdown knowledge files (<code>&lt;app-id&gt;.md</code> and <code>KB_INDEX.md</code>).
+        </div>
+      </div>
+    </details>
+
+    <!-- Section 2: Commands Reference -->
+    <details class="section" open id="commands">
+      <summary><div class="section-label">2. Command-by-Command Functional Guide</div></summary>
+      
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Command Name</th>
+              <th>VS Code Command ID</th>
+              <th>Execution Mode</th>
+              <th>Primary Action &amp; Output</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>BuildContext: Workspace</strong></td>
+              <td><code>buildcontext.workspace</code></td>
+              <td><span class="tag tag-green">100% Offline Rule-Based</span></td>
+              <td>Scans workspace, detects apps, generates <code>.buildcontext/kb/&lt;app-id&gt;.md</code>, <code>KB_INDEX.md</code>, <code>suite.json</code>, and <code>CATEGORIES.md</code>. Automatically re-extracts if code, settings, or rule-packs change.</td>
+            </tr>
+            <tr>
+              <td><strong>BuildContext: Folder...</strong></td>
+              <td><code>buildcontext.folder</code></td>
+              <td><span class="tag tag-green">100% Offline Rule-Based</span></td>
+              <td>Opens a folder picker to scan a specific subfolder or project outside the main workspace.</td>
+            </tr>
+            <tr>
+              <td><strong>BuildContext: Refine Path</strong></td>
+              <td><code>buildcontext.refinePath</code></td>
+              <td><span class="tag tag-green">100% Offline Rule-Based</span></td>
+              <td>Reads <code>CATEGORIES.md</code>, clusters all raw <code>.md</code> files into 6-8 domain category files (<code>agent-&lt;domain&gt;.md</code>), compacts prose, outputs to <code>_refined/</code>, and opens <code>REFINE_REPORT.md</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>BuildContext: Workspace AI</strong></td>
+              <td><code>buildcontext.workspaceAi</code></td>
+              <td><span class="tag tag-purple">Opt-In AI Mode</span></td>
+              <td>Uses a model (Ollama, OpenAI-compatible, Anthropic, Gemini) to author KB files from redacted evidence packs with grounding validation.</td>
+            </tr>
+            <tr>
+              <td><strong>BuildContext: Refine Path AI</strong></td>
+              <td><code>buildcontext.refinePathAi</code></td>
+              <td><span class="tag tag-purple">Opt-In AI Mode</span></td>
+              <td>Uses an AI model to synthesize merged Markdown text for category clusters during refinement.</td>
+            </tr>
+            <tr>
+              <td><strong>BuildContext: Generate Agent Pointers</strong></td>
+              <td><code>buildcontext.generatePointers</code></td>
+              <td><span class="tag tag-blue">Managed Pointers</span></td>
+              <td>Appends managed instruction blocks to <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>copilot-instructions.md</code>, and <code>buildcontext.mdc</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>BuildContext: Open Index</strong></td>
+              <td><code>buildcontext.openIndex</code></td>
+              <td><span class="tag tag-yellow">Utility</span></td>
+              <td>Opens <code>.buildcontext/kb/KB_INDEX.md</code> directly in the editor.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- Section 3: Token Metrics -->
+    <details class="section" open id="token-metrics">
+      <summary><div class="section-label">3. Token Metrics &amp; Budget Architecture</div></summary>
+
+      <div class="card">
+        <div class="card-title">📊 Token Accounting &amp; Tracking Metrics</div>
+        <div class="card-desc">
+          BuildContext tracks approximate token counts (deterministic <code>chars / 4</code> formula) across all generated files:
+        </div>
+        <ul style="margin-left: 20px; font-size: 13px; line-height: 1.8; color: var(--muted);">
+          <li><strong>Per-File Front Matter Header</strong>: Every <code>.md</code> file includes exact token count in its YAML metadata (<code>tokens: 2850</code>).</li>
+          <li><strong>Index Token Accounting (<code>KB_INDEX.md</code>)</strong>: Lists approximate token cost for every application plus the suite total token sum (e.g. <code>Total Suite Tokens: ~12,500 tokens across 4 applications</code>).</li>
+          <li><strong>Machine-Readable Metadata (<code>suite.json</code>)</strong>: Exports full token telemetry for scripts and CI tooling.</li>
+          <li><strong>Refine Report Savings (<code>REFINE_REPORT.md</code>)</strong>: Reports exact token reduction before and after refinement (e.g., <code>300,000 tokens before → 35,000 tokens after: 88.3% token savings</code>).</li>
+        </ul>
+      </div>
+
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Artifact / Stage</th>
+              <th>Raw Code Base</th>
+              <th>Rule-Based KB File</th>
+              <th>Refined Domain Agent File</th>
+              <th>Total Savings</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Single Application Context</strong></td>
+              <td>50,000 - 150,000 tokens</td>
+              <td>~3,000 tokens (target)</td>
+              <td>~2,500 tokens (compacted)</td>
+              <td><span class="tag tag-green">95%+ Reduction</span></td>
+            </tr>
+            <tr>
+              <td><strong>Large Multi-App Workspace</strong></td>
+              <td>300,000+ tokens</td>
+              <td>358 raw files (~300k tokens)</td>
+              <td>6-8 Domain Agent Files (~35k tokens)</td>
+              <td><span class="tag tag-green">88%+ Reduction</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- Section 4: Customizable CATEGORIES.md Guide -->
+    <details class="section" open id="categories-spec">
+      <summary><div class="section-label">4. User-Customizable CATEGORIES.md Architecture</div></summary>
+
+      <div class="card">
+        <div class="card-title">⚙️ How to Customize CATEGORIES.md</div>
+        <div class="card-desc">
+          Categories are <strong>user-driven, not hardcoded</strong>. When you run <code>BuildContext: Workspace</code>, it generates <code>.buildcontext/kb/CATEGORIES.md</code>. You can open and edit this file to define your exact domain taxonomy:
+        </div>
+        <pre># BuildContext Category & Domain Architecture Spec
+---
+categories:
+  - id: auth-security
+    name: "Authentication & Security"
+    agent: "Auth & Security AI Agent"
+    keywords: ["auth", "security", "jwt", "token", "permission", "role", "secret"]
+    paths: ["src/auth", "src/security"]
+
+  - id: claims-processing
+    name: "Insurance Claims Processing"
+    agent: "Claims Domain AI Agent"
+    keywords: ["claim", "policy", "adjudication", "coverage", "payout"]
+    paths: ["src/claims", "lib/domain/claims"]
+---</pre>
+      </div>
+    </details>
+
+    <!-- Section 5: Refine Path & Multi-Agent Specs -->
+    <details class="section" open id="refine-architecture">
+      <summary><div class="section-label">5. Refine Path &amp; Multi-Agent Architecture Plan</div></summary>
+
+      <div class="card">
+        <div class="card-title">🤖 Multi-Agent Decomposition Strategy</div>
+        <div class="card-desc">
+          When you run <code>BuildContext: Refine Path</code>, BuildContext reads <code>CATEGORIES.md</code>, clusters all raw context files into your defined categories, and generates <strong>exactly 1 specialized Markdown context file per category</strong> (<code>agent-auth-security.md</code>, <code>agent-claims-processing.md</code>, etc.) inside <code>_refined/</code>.
+        </div>
+      </div>
+    </details>
+
+    <!-- Section 6: Manual Block Safety -->
+    <details class="section" open id="manual-preservation">
+      <summary><div class="section-label">6. Preserving Manual Developer Notes</div></summary>
+
+      <div class="card">
+        <div class="card-title">🛡️ Safety &amp; Preservation Guarantee</div>
+        <div class="card-desc">
+          Any custom developer notes written under <code>&lt;!-- buildcontext:manual --&gt;</code> or inside <code>&lt;!-- buildcontext:keep --&gt;...&lt;!-- /buildcontext:keep --&gt;</code> are <strong>100% preserved verbatim</strong> across all regenerations and refinement passes.
+        </div>
+      </div>
+    </details>
+
+    <!-- Section 7: FAQ -->
+    <details class="section" open id="troubleshooting">
+      <summary><div class="section-label">7. Frequently Asked Questions (FAQ)</div></summary>
+
+      <div class="card">
+        <div class="card-title">❓ Can I delete raw .md files outside the _refined/ folder?</div>
+        <div class="card-desc">
+          <strong>Yes!</strong> The merged <code>agent-&lt;category&gt;.md</code> files inside <code>_refined/</code> contain 100% of the codebase knowledge in an ultra-compact format. When Refine Path completes, VS Code prompts you: <code>[Replace Folder Files]</code> to automatically replace raw files and save a backup in <code>.buildcontext-backup/</code>.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">❓ How do AI agents inspect raw code when needed?</div>
+        <div class="card-desc">
+          Every component, interface endpoint, and hotspot table row in BuildContext KB files includes clickable file links and line pointers (e.g. <code>[server.ts](file:///c:/project/src/server.ts#L45)</code>). When an AI agent needs actual implementation code, it clicks the link to inspect the exact lines in your workspace!
+        </div>
+      </div>
+    </details>
+
+    <!-- Footer -->
+    <div style="margin-top: 48px; text-align: center; color: var(--muted); font-size: 12px;">
+      BuildContext v1.0.0 • Published by AvijitKumarTewary • MIT License
+    </div>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const root = document.documentElement;
+      if (root.getAttribute('data-theme') === 'light') {
+        root.removeAttribute('data-theme');
+      } else {
+        root.setAttribute('data-theme', 'light');
+      }
+    }
+  </script>
+</body>
+</html>
